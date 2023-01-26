@@ -21,14 +21,19 @@ function LoggedIn({ myPubkey }) {
 			let message = arr[1]
 			let encryptedMessage = ''
 			let errors = []
+			let event = {}
+			let signedEvent = {}
 
 			if(pubkey.indexOf('npub') === 0) {
-				let {type, data} = nip19.decode(pubkey)
-
-				if(type === 'npub') {
-					pubkey = data
-				} else {
-					errors.push('invalid pubkey provided')
+				try {
+					let {type, data} = nip19.decode(pubkey)
+					if(type === 'npub') {
+						pubkey = data
+					} else {
+						errors.push('invalid pubkey provided')
+					}
+				} catch (e) {
+					errors.push(e.toString())
 				}
 			} else {
 				if(pubkey.length !== 64) {
@@ -36,19 +41,21 @@ function LoggedIn({ myPubkey }) {
 				}
 			}
 
-			encryptedMessage = await window.nostr.nip04.encrypt(pubkey, message)
+			if(!errors.length) {
+				encryptedMessage = await window.nostr.nip04.encrypt(pubkey, message)
 
-			let event = {
-			  kind: 4,
-			  pubkey: myPubkey,
-			  created_at: dateToUnix(),
-			  tags: [['p', pubkey]],
-			  content: encryptedMessage,
+				event = {
+				  kind: 4,
+				  pubkey: myPubkey,
+				  created_at: dateToUnix(),
+				  tags: [['p', pubkey]],
+				  content: encryptedMessage,
+				}
+				event.id = getEventHash(event)
+				
+				signedEvent = await window.nostr.signEvent(event)
 			}
-			event.id = getEventHash(event)
 			
-			const signedEvent = await window.nostr.signEvent(event)
-
 			return {
 				pubkey: pubkey,
 				message: message,
@@ -83,7 +90,9 @@ function LoggedIn({ myPubkey }) {
 		if(!sending) {
 			setSending(true)
 			data.forEach((el) => {
-				publish(el.signedEvent)
+				if(el.signedEvent.id) { 
+					publish(el.signedEvent)
+				}
 			})
 			
 			setTimeout(() => {
@@ -116,7 +125,7 @@ function LoggedIn({ myPubkey }) {
 							<tbody>
 								{data.map((el) => {
 									return (
-										<tr key={el.signedEvent.id} style={{color: (el.errors.length > 0 ? "red" : "black")}}>
+										<tr key={el.signedEvent.id || Math.random()} style={{color: (el.errors.length > 0 ? "red" : "black")}}>
 											<td>{el.pubkey}</td>
 											<td>{el.message}</td>
 											<td>{el.errors.join(', ')}</td>
