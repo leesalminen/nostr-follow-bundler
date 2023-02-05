@@ -31,6 +31,8 @@ function App() {
 
   const [mostRecentKind3, setMostRecentKind3] = useState(0)
   const [relayUrls, setRelayUrls] = useState([])
+  const [followList, setFollowList] = useState([])
+  const [kind3Content, setKind3Content] = useState({})
   const [pubkey, setPubkey] = useState(null)
 
   useEffect(() => {
@@ -67,11 +69,33 @@ function App() {
           ])
           sub.on('event', event => {
             if(event.created_at > mostRecentKind3) {
-              const obj = JSON.parse(event.content)
-              const relayUrls = Object.keys(obj)
-
-              setRelayUrls(relayUrls)
               setMostRecentKind3(event.created_at)
+
+              const relayList = JSON.parse(event.content)
+              const relayUrls = Object.keys(relayList)
+
+              if(relayUrls.length > 0) {
+                setRelayUrls(relayUrls)
+              }
+              
+              const followList = []
+              event.tags.forEach((tag) => {
+                if(tag[0] == 'p') {
+                  followList.push(tag[1])
+                }
+              })
+
+              if(followList.length > 0) {
+                setFollowList([...new Set(followList)])
+              }
+
+              if(event.content.length > 0) {
+                const contentObj = JSON.parse(event.content)
+
+                if(contentObj) {
+                  setKind3Content(contentObj)
+                }
+              }
             }
           })
           sub.on('eose', () => {
@@ -103,7 +127,7 @@ function App() {
   return (
     <div className="App">
 
-      <h1>Nostr Bulk DM Tool</h1>
+      <h1>Nostr Follow Bundler</h1>
 
       {!pubkey &&
         <p>Please authenticate using your nostr browser extension</p>
@@ -118,10 +142,12 @@ function App() {
         </div>
       }
 
-      {pubkey && relayUrls.length > 0 && 
+      {pubkey && relayUrls.length > 0 && followList.length > 0 &&
         <NostrProvider relayUrls={relayUrls}>
           <LoggedIn 
-            myPubkey={pubkey} />
+            myPubkey={pubkey}
+            followList={followList}
+            kind3Content={kind3Content} />
         </NostrProvider>
       }
     </div>

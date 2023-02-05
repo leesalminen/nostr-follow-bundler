@@ -1,146 +1,111 @@
-import { useProfile, dateToUnix, useNostr } from "nostr-react"
+import { useProfile, dateToUnix, useNostr, useNostrEvents } from "nostr-react"
 import { useState } from "react"
-import * as Papa from 'papaparse'
-import { nip19, getEventHash } from "nostr-tools"
+import { getEventHash,  signEvent } from "nostr-tools"
 
-function LoggedIn({ myPubkey }) {
+import Follower from './Follower'
+import Bundles from './Bundles'
+
+function LoggedIn({ myPubkey, followList, kind3Content }) {
 	const { data: userData } = useProfile({pubkey: myPubkey});
 	const { publish } = useNostr();
 
-	const [data, setData] = useState([])
-	const [sending, setSending] = useState(false)
+	const [creatingBundle, setCreatingBundle] = useState(false)
+	const [selectedProfiles, setSelectedProfiles] = useState([])
+	const [bundleName, setBundleName] = useState("")
+	const [viewBundles, setViewBundles] = useState(false)
 
-	const completeFileCallback = async (data) => {
-		if(data.errors.length) {
-			alert(data.errors.join("\n"))
-			return
-		}
-
-		const mapData = await Promise.all(data.data.map(async (arr) => {
-			let pubkey = arr[0].toLowerCase()
-			let message = arr[1]
-			let encryptedMessage = ''
-			let errors = []
-			let event = {}
-			let signedEvent = {}
-
-			if(pubkey.indexOf('npub') === 0) {
-				try {
-					let {type, data} = nip19.decode(pubkey)
-					if(type === 'npub') {
-						pubkey = data
-					} else {
-						errors.push('invalid pubkey provided')
-					}
-				} catch (e) {
-					errors.push(e.toString())
-				}
-			} else {
-				if(pubkey.length !== 64) {
-					errors.push('invalid pubkey length')
-				}
-			}
-
-			if(!errors.length) {
-				encryptedMessage = await window.nostr.nip04.encrypt(pubkey, message)
-
-				event = {
-				  kind: 4,
-				  pubkey: myPubkey,
-				  created_at: dateToUnix(),
-				  tags: [['p', pubkey]],
-				  content: encryptedMessage,
-				}
-				event.id = getEventHash(event)
-				
-				signedEvent = await window.nostr.signEvent(event)
-			}
-			
-			return {
-				pubkey: pubkey,
-				message: message,
-				encryptedMessage: encryptedMessage,
-				errors: errors,
-				signedEvent: signedEvent,
-			}
-		}));
-
-		console.log(mapData)
-
-		setData(mapData)
+	const handleBundleNameInput = (e) => {
+		setBundleName(e.target.value)
 	}
 
-	const handleFileSelect = (e) => {
-		const file = e.target.files[0]
-
-		if(file.type !== 'text/csv') {
-			alert('Invalid file type.')
-			return
+	const createBundle = async () => {
+		let event = {
+		  kind: 777,
+		  pubkey: myPubkey,
+		  created_at: dateToUnix(),
+		  tags: selectedProfiles.map((profile) => {
+		  	return ['p', profile]
+		  }),
+		  content: bundleName,
 		}
+		console.log(event)
+		event.id = getEventHash(event)
+		
+		const signedEvent = await window.nostr.signEvent(event)
 
-		Papa.parse(
-			file, 
-			{
-				complete: completeFileCallback,
-			}
-		)
-	}
+		publish(signedEvent)
 
-	const publishMessages = () => {
-		if(!sending) {
-			setSending(true)
-			data.forEach((el) => {
-				if(el.signedEvent.id) { 
-					publish(el.signedEvent)
-				}
-			})
-			
-			setTimeout(() => {
-				setSending(false)
-				setData([])
-				alert("Your DMs have been sent!")
-			}, 1000)
-		}
+		setSelectedProfiles([])
+		setBundleName("")
+		setCreatingBundle(false)
 	}
 
 	return (
-		<div>
+		<div className="container">
 			<p>Hello, {userData && userData.name ? userData.name : myPubkey.substr(0,8)}</p>
 
-			<p><b>Select a CSV file that contains rows of 2 columns (pubkey,message)</b></p>
-			<input type="file" onInput={handleFileSelect} />
+			{!creatingBundle && !viewBundles && 
+				<div>
+					<p><b>Please select the profiles you wish to bundle and publish.</b></p>
+					<p><b>Or, <a href="#" onClick={() => setViewBundles(true)}>click here</a> to view bundles created by your friends.</b></p>
 
-			{data.length > 0 && 
-				<>
-					<div>
-						<p><b>You have entered {data.length} pubkeys to DM</b></p>
-						<table>
-							<thead>
-								<tr>
-									<th><b>Pubkey</b></th>
-									<th><b>Message</b></th>
-									<th><b>Errors</b></th>
-								</tr>
-							</thead>
-							<tbody>
-								{data.map((el) => {
-									return (
-										<tr key={el.signedEvent.id || Math.random()} style={{color: (el.errors.length > 0 ? "red" : "black")}}>
-											<td>{el.pubkey}</td>
-											<td>{el.message}</td>
-											<td>{el.errors.join(', ')}</td>
-										</tr>
-									)
-								})}
-							</tbody>
-						</table>
+					<div className="profiles">
+						{followList.map((follower) => {
+							return (
+								<Follower
+									key={follower}
+									pubkey={follower}
+									selectedProfiles={selectedProfiles}
+									setSelectedProfiles={setSelectedProfiles} />
+							)
+						})}
 					</div>
-					<br />
-					<p><b>Please review the above, once ready click the button below to send the bulk DMs</b></p>
-					<button onClick={publishMessages} disabled={sending}>Send {data.length} DMs Now!</button>
-				</>
+
+					{selectedProfiles.length > 0 &&
+						<div className="create-bundle" onClick={() => setCreatingBundle(true)}>
+							<p><b>Bundle {selectedProfiles.length} profiles!</b></p>
+						</div>
+					}
+				</div>
 			}
-			
+
+			{creatingBundle && !viewBundles && 
+				<div>
+					<p><b>Please confirm the list of followers you wish to bundle and give it a name below</b></p>
+
+					<div className="bundle-name">
+						<span><b>Bundle Name</b></span>
+						<br />
+						<input type="text" value={bundleName} onChange={handleBundleNameInput} />
+					</div>
+
+					<div className="profiles">
+						{selectedProfiles.map((follower) => {
+							return (
+								<Follower
+									key={follower}
+									pubkey={follower}
+									selectedProfiles={selectedProfiles}
+									setSelectedProfiles={setSelectedProfiles} />
+							)
+						})}
+					</div>
+					
+					{bundleName.length > 0 && 
+						<div className="create-bundle" onClick={createBundle}>
+							<p><b>Create Bundle Now!</b></p>
+						</div>
+					}
+				</div>
+			}
+
+			{viewBundles && 
+				<Bundles
+					followList={followList}
+					myPubkey={myPubkey}
+					setViewBundles={setViewBundles}
+					kind3Content={kind3Content} />
+			}
 		</div>
 	)
 }

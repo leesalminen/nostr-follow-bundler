@@ -1,12 +1,137 @@
 .App {
   text-align: center;
+  height: 100vh;
 }
 
-table {
+.container {
+  min-height: 100%;
+}
+
+.profiles {
   text-align: left;
   margin: 0 auto;
 }
 
-table tr td, table tr th {
-  border: 1px solid black;
+.bundle-name {
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin: 10px auto;
+}
+
+.bundle-list {
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin: 10px auto;
+}
+
+.bundle-name input {
+  width: 80%;
+}
+
+@media (min-width: 860px) {
+  .profiles, .bundle-name {
+    width: 50%;
+  }
+
+  .create-bundle {
+    height: 50px;
+  }
+}
+
+@media (max-width: 859px) {
+  .profiles, .bundle-name {
+    width: 90%;
+  }
+
+  .create-bundle {
+    height: 30px;
+  }
+
+  .create-bundle p {
+    margin: 5px;
+  }
+}
+
+.flex-container {
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-content: center;
+  -ms-flex-line-pack: center;
+  align-content: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+
+  margin-bottom: 15px;
+}
+
+.flex-item:nth-child(1) {
+  -webkit-order: 0;
+  -ms-flex-order: 0;
+  order: 0;
+  -webkit-flex: 0 1 auto;
+  -ms-flex: 0 1 auto;
+  flex: 0 1 auto;
+  -webkit-align-self: center;
+  -ms-flex-item-align: center;
+  align-self: center;
+}
+
+.flex-item:nth-child(2) {
+  -webkit-order: 0;
+  -ms-flex-order: 0;
+  order: 0;
+  -webkit-flex: 0 1 auto;
+  -ms-flex: 0 1 auto;
+  flex: 0 1 auto;
+  -webkit-align-self: auto;
+  -ms-flex-item-align: auto;
+  align-self: auto;
+}
+
+.flex-item:nth-child(3) {
+  -webkit-order: 0;
+  -ms-flex-order: 0;
+  order: 0;
+  -webkit-flex: 0 1 auto;
+  -ms-flex: 0 1 auto;
+  flex: 0 1 auto;
+  -webkit-align-self: auto;
+  -ms-flex-item-align: auto;
+  align-self: auto;
+}
+
+.profileSelector {
+  margin-right: 25px;
+  cursor: pointer;
+}
+
+.profilePicture {
+  margin-right: 25px;
+  cursor: pointer;
+}
+
+.profileDetails {
+  flex-grow: 1;
+  cursor: pointer;
+}
+
+.create-bundle {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  background-color: purple;
+  border: 1px solid #ccc;
+  color: white;
+  cursor: pointer;
 }
