@@ -40,7 +40,7 @@ function LoggedIn({ myPubkey, followList, kind3Content }) {
 		setCreatingBundle(false)
 
 		setTimeout(() => {
-			const url = `${window.location.protocol}//${window.location.host}/${event.id}`
+			const url = `${window.location.protocol}//${window.location.host}?id=${event.id}`
 			setTimeout(() => {
 				alert(`Success! Bundle created`)
 			}, 1000)
@@ -53,10 +53,11 @@ function LoggedIn({ myPubkey, followList, kind3Content }) {
 	}
 
 	useEffect(() => {
-		const path = window.location.pathname.substring(1)
+		let params = (new URL(document.location)).searchParams;
+		let id = params.get("id");
 
-		if(path && path.length > 0) {
-			setDefaultBundleId(path)
+		if(id && id.length > 0) {
+			setDefaultBundleId(id)
 			setViewBundles(true)
 		}
 	}, [])

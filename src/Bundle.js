@@ -57,7 +57,7 @@ function Bundle({ bundle, followList, kind3Content, myPubkey, defaultBundleId })
 	}
 
 	const copyUrl = () => {
-		const url = `${window.location.protocol}//${window.location.host}/${bundle.id}`
+		const url = `${window.location.protocol}//${window.location.host}?id=${bundle.id}`
 		try {
 			navigator.clipboard.writeText(url)
 
