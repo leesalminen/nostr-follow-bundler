@@ -28,7 +28,6 @@ function LoggedIn({ myPubkey, followList, kind3Content }) {
 		  }),
 		  content: bundleName,
 		}
-		console.log(event)
 		event.id = getEventHash(event)
 		
 		const signedEvent = await window.nostr.signEvent(event)
@@ -38,6 +37,10 @@ function LoggedIn({ myPubkey, followList, kind3Content }) {
 		setSelectedProfiles([])
 		setBundleName("")
 		setCreatingBundle(false)
+
+		setTimeout(() => {
+			alert("We have created this new bundle and published it!")
+		}, 500)
 	}
 
 	return (

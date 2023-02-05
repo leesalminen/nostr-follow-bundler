@@ -28,8 +28,6 @@ function Bundle({ bundle, followList, kind3Content, myPubkey }) {
 	const addFollowers = async () => {
 		const newList = [...new Set([...followList, ...pubkeys])]
 
-		console.log(newList)
-
 		let event = {
 		  kind: 3,
 		  pubkey: myPubkey,
@@ -39,7 +37,6 @@ function Bundle({ bundle, followList, kind3Content, myPubkey }) {
 		  }),
 		  content: JSON.stringify(kind3Content),
 		}
-		console.log(event)
 		event.id = getEventHash(event)
 		
 		const signedEvent = await window.nostr.signEvent(event)
