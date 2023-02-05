@@ -19,7 +19,6 @@ const defaultRelayUrls = [
   'wss://nostr.milou.lol',
   'wss://eden.nostr.land',
   'wss://relay.damus.io',
-  'wss://nostr.orangepill.dev',
   'wss://nostr.oxtr.dev',
 ]
 
