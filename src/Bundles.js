@@ -2,7 +2,12 @@ import { useNostrEvents } from "nostr-react"
 
 import Bundle from './Bundle'
 
-function Bundles({ followList, myPubkey, setViewBundles, kind3Content }) {
+function Bundles({ followList, myPubkey, setViewBundles, kind3Content, defaultBundleId }) {
+	const {events: defaultBundle} = useNostrEvents({
+	    filter: {
+	    	ids: [defaultBundleId],
+	    },
+	})
 
 	const {events: existingBundles} = useNostrEvents({
 	    filter: {
@@ -18,6 +23,16 @@ function Bundles({ followList, myPubkey, setViewBundles, kind3Content }) {
 
 			{existingBundles.length > 0 &&
 				<div className="profiles">
+					{defaultBundleId && defaultBundle.length > 0 &&
+						<Bundle
+							key={defaultBundle[0].id}
+							bundle={defaultBundle[0]}
+							followList={followList}
+							kind3Content={kind3Content}
+							myPubkey={myPubkey}
+							defaultBundleId={defaultBundleId} />
+					}
+
 					{existingBundles.sort((a, b) => a.created_at - b.created_at).reverse().map((bundle) => {
 						return (
 							<Bundle

@@ -1,5 +1,5 @@
 import { useProfile, dateToUnix, useNostr, useNostrEvents } from "nostr-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { getEventHash,  signEvent } from "nostr-tools"
 
 import Follower from './Follower'
@@ -13,6 +13,7 @@ function LoggedIn({ myPubkey, followList, kind3Content }) {
 	const [selectedProfiles, setSelectedProfiles] = useState([])
 	const [bundleName, setBundleName] = useState("")
 	const [viewBundles, setViewBundles] = useState(false)
+	const [defaultBundleId, setDefaultBundleId] = useState(null)
 
 	const handleBundleNameInput = (e) => {
 		setBundleName(e.target.value)
@@ -39,9 +40,26 @@ function LoggedIn({ myPubkey, followList, kind3Content }) {
 		setCreatingBundle(false)
 
 		setTimeout(() => {
-			alert("We have created this new bundle and published it!")
+			const url = `${window.location.protocol}//${window.location.host}/${event.id}`
+			setTimeout(() => {
+				alert(`Success! Bundle created`)
+			}, 1000)
+			try {
+				navigator.clipboard.writeText(url)
+			} catch(e) {
+				console.log(e)
+			}
 		}, 500)
 	}
+
+	useEffect(() => {
+		const path = window.location.pathname.substring(1)
+
+		if(path && path.length > 0) {
+			setDefaultBundleId(path)
+			setViewBundles(true)
+		}
+	}, [])
 
 	return (
 		<div className="container">
@@ -107,7 +125,8 @@ function LoggedIn({ myPubkey, followList, kind3Content }) {
 					followList={followList}
 					myPubkey={myPubkey}
 					setViewBundles={setViewBundles}
-					kind3Content={kind3Content} />
+					kind3Content={kind3Content}
+					defaultBundleId={defaultBundleId} />
 			}
 		</div>
 	)

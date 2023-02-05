@@ -5,7 +5,7 @@ import { nip05, getEventHash, signEvent } from 'nostr-tools'
 
 import Follower from './Follower'
 
-function Bundle({ bundle, followList, kind3Content, myPubkey }) {
+function Bundle({ bundle, followList, kind3Content, myPubkey, defaultBundleId }) {
 	const { publish } = useNostr();
 	const { data: userData } = useProfile({pubkey: bundle.pubkey});
 
@@ -26,6 +26,12 @@ function Bundle({ bundle, followList, kind3Content, myPubkey }) {
 			})
 		}
 	}, [userData])
+
+	useEffect(() => {
+		if(defaultBundleId && defaultBundleId === bundle.id) {
+			setViewBundle(true)
+		}
+	}, [defaultBundleId])
 	
 	const addFollowers = async () => {
 		const newList = [...new Set([...followList, ...pubkeys])]
@@ -50,6 +56,20 @@ function Bundle({ bundle, followList, kind3Content, myPubkey }) {
 		}, 500)
 	}
 
+	const copyUrl = () => {
+		const url = `${window.location.protocol}//${window.location.host}/${bundle.id}`
+		try {
+			navigator.clipboard.writeText(url)
+
+			setTimeout(() => {
+				alert(`${url} has been copied to your clipboard`)
+			}, 1000)
+
+		} catch(e) {
+			console.log(e)
+		}
+	}
+
 	return (
 		<div>
 			<div className="flex-container">
@@ -61,6 +81,10 @@ function Bundle({ bundle, followList, kind3Content, myPubkey }) {
 						{viewBundle &&
 							<span>Hide Bundle</span>
 						}
+					</button>
+					<br />
+					<button onClick={copyUrl}>
+						Share Link
 					</button>
 				</div>
 				
