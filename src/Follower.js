@@ -7,9 +7,11 @@ function Follower({ pubkey, selectedProfiles, setSelectedProfiles }) {
 	const { data: userData } = useProfile({pubkey});
 
 	const [ isNip05, setIsNip05 ] = useState(false)
+	const [ isNip05Loading, setIsNip05Loading ] = useState(false)
 
 	useEffect(() => {
-		if(userData && userData.nip05 && !isNip05) {
+		if(userData && userData.nip05 && !isNip05 && !isNip05Loading) {
+			setIsNip05Loading(true)
 			nip05.queryProfile(userData.nip05)
 			.then((res) => {
 				if(res && res.pubkey && res.pubkey === pubkey) {
