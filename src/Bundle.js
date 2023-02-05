@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useProfile, useNostr, dateToUnix } from "nostr-react"
-import { nip05, getEventHash, signEvent } from 'nostr-tools'
+import { nip05, getEventHash } from 'nostr-tools'
 
 
 import Follower from './Follower'
@@ -23,7 +23,7 @@ function Bundle({ bundle, followList, kind3Content, myPubkey }) {
 				}
 			})
 		}
-	}, [userData])
+	}, [userData, bundle, isNip05])
 	
 	const addFollowers = async () => {
 		const newList = [...new Set([...followList, ...pubkeys])]

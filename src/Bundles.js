@@ -14,7 +14,7 @@ function Bundles({ followList, myPubkey, setViewBundles, kind3Content }) {
 	return (
 		<div>
 			<p><b>Check out the bundles your friends have already created!</b></p>
-			<p><b>Or, <a href="#" onClick={() => setViewBundles(false)}>click here</a> to go back to create a new bundle</b></p>
+			<p><b>Or, <button onClick={() => setViewBundles(false)}>click here</button> to go back to create a new bundle</b></p>
 
 			{existingBundles.length > 0 &&
 				<div className="profiles">
@@ -31,7 +31,7 @@ function Bundles({ followList, myPubkey, setViewBundles, kind3Content }) {
 				</div>
 			}
 
-			{existingBundles.length == 0 &&
+			{existingBundles.length === 0 &&
 				<p>No bundles found.</p>
 			}
 
