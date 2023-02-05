@@ -70,7 +70,8 @@ function App() {
               const relayUrls = Object.keys(relayList)
 
               if(relayUrls.length > 0) {
-                setRelayUrls(relayUrls)
+                const merged = new Set([...relayUrls, ...defaultRelayUrls])
+                setRelayUrls([...merged])
               }
               
               const followList = []
