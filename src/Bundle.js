@@ -68,6 +68,8 @@ function Bundle({ bundle, followList, kind3Content, myPubkey }) {
 				<div className="profileDetails">
 					<span><b>Bundle Name</b> {bundle.content}</span>
 					<br />
+					<span><b>Created At</b> {new Date(bundle.created_at * 1000).toISOString()}</span>
+					<br />
 					<span><b># of Profiles</b> {pubkeys.length}</span>
 					<br />
 					<span><b>Published By</b> {userData && userData.name ? userData.name : bundle.pubkey.substr(0, 8)}</span>

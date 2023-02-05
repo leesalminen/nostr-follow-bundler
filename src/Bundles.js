@@ -18,7 +18,7 @@ function Bundles({ followList, myPubkey, setViewBundles, kind3Content }) {
 
 			{existingBundles.length > 0 &&
 				<div className="profiles">
-					{existingBundles.map((bundle) => {
+					{existingBundles.sort((a, b) => a.created_at - b.created_at).reverse().map((bundle) => {
 						return (
 							<Bundle
 								key={bundle.id}
