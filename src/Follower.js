@@ -17,7 +17,7 @@ function Follower({ pubkey, selectedProfiles, setSelectedProfiles }) {
 				}
 			})
 		}
-	}, [userData, isNip05, pubkey])
+	}, [userData])
 
 	const toggleProfile = () => {
 		let profiles = [...selectedProfiles]
@@ -38,10 +38,10 @@ function Follower({ pubkey, selectedProfiles, setSelectedProfiles }) {
 			</div>
 			<div className="profilePicture">
 				{userData && userData.picture && userData.picture.length > 0 && 
-					<img alt="pfp" src={userData.picture} style={{width: 100}} onClick={toggleProfile} />
+					<img src={userData.picture} style={{width: 100}} onClick={toggleProfile} />
 				}
-				{(!userData || !userData.picture || userData.picture.length === 0) &&
-					<img alt="placeholder pfp" src="https://placehold.it/100x100" onClick={toggleProfile} />
+				{(!userData || !userData.picture || userData.picture.length == 0) &&
+					<img src="https://placehold.it/100x100" onClick={toggleProfile} />
 				}
 			</div>
 			<div className="profileDetails" onClick={toggleProfile}>

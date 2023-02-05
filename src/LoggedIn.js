@@ -1,6 +1,6 @@
-import { useProfile, dateToUnix, useNostr } from "nostr-react"
+import { useProfile, dateToUnix, useNostr, useNostrEvents } from "nostr-react"
 import { useState } from "react"
-import { getEventHash } from "nostr-tools"
+import { getEventHash,  signEvent } from "nostr-tools"
 
 import Follower from './Follower'
 import Bundles from './Bundles'
@@ -50,7 +50,7 @@ function LoggedIn({ myPubkey, followList, kind3Content }) {
 			{!creatingBundle && !viewBundles && 
 				<div>
 					<p><b>Please select the profiles you wish to bundle and publish.</b></p>
-					<p><b>Or, <button onClick={() => setViewBundles(true)}>click here</button> to view bundles created by your friends.</b></p>
+					<p><b>Or, <a href="#" onClick={() => setViewBundles(true)}>click here</a> to view bundles created by your friends.</b></p>
 
 					<div className="profiles">
 						{followList.map((follower) => {

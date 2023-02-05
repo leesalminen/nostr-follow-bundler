@@ -80,7 +80,7 @@ function App() {
               
               const followList = []
               event.tags.forEach((tag) => {
-                if(tag[0] === 'p') {
+                if(tag[0] == 'p') {
                   followList.push(tag[1])
                 }
               })
@@ -110,7 +110,7 @@ function App() {
       getRelayList()
     }
     
-  }, [pubkey, mostRecentKind3])
+  }, [pubkey])
 
   const selectRelays = () => {
     let relayUrls = prompt("Enter a list of comma separated relay URLs")
