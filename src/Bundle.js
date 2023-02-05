@@ -10,12 +10,14 @@ function Bundle({ bundle, followList, kind3Content, myPubkey }) {
 	const { data: userData } = useProfile({pubkey: bundle.pubkey});
 
 	const [ isNip05, setIsNip05 ] = useState(false)
+	const [ isNip05Loading, setIsNip05Loading ] = useState(false)
 	const [ viewBundle, setViewBundle ] = useState(false)
 
 	const pubkeys = bundle.tags.map(tag => tag[1])
 
 	useEffect(() => {
-		if(userData && userData.nip05 && !isNip05) {
+		if(userData && userData.nip05 && !isNip05 && !isNip05Loading) {
+			setIsNip05Loading(true)
 			nip05.queryProfile(userData.nip05)
 			.then((res) => {
 				if(res && res.pubkey && res.pubkey === bundle.pubkey) {
