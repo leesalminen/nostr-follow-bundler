@@ -11,7 +11,7 @@ function Bundles({ followList, myPubkey, setViewBundles, kind3Content, defaultBu
 
 	const {events: existingBundles} = useNostrEvents({
 	    filter: {
-	    	kinds: [777],
+	    	kinds: [7777],
 		   	authors: [...followList, myPubkey],
 	    },
 	})

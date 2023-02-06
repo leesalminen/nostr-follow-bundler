@@ -21,7 +21,7 @@ function LoggedIn({ myPubkey, followList, kind3Content }) {
 
 	const createBundle = async () => {
 		let event = {
-		  kind: 777,
+		  kind: 7777,
 		  pubkey: myPubkey,
 		  created_at: dateToUnix(),
 		  tags: selectedProfiles.map((profile) => {
