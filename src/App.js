@@ -96,7 +96,6 @@ function App() {
           })
           sub.on('eose', () => {
             sub.unsub()
-            relay.disconnect()
           })
         })
       })
